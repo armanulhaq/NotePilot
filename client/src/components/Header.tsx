@@ -1,8 +1,26 @@
 import { ModeToggle } from "./mode-toggle";
 import { useNavigate } from "react-router-dom";
+import { loginWithGoogle, logout } from "../auth";
+import { Button } from "./ui/button";
+import type { User } from "firebase/auth";
+import { useEffect, useState } from "react";
+import { auth } from "../firebase";
+import { LogOut } from "lucide-react";
 
 export default function Header() {
     const navigate = useNavigate();
+    const [user, setUser] = useState<User | null>(null);
+    // Listen for auth state changes
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+            setUser(currentUser);
+        });
+
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
+    }, []);
+    console.log(user);
+
     return (
         <header className="w-full fixed top-0 z-50 backdrop-blur-lg bg-background/90 text-foreground border-b">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
@@ -26,7 +44,9 @@ export default function Header() {
 
                 <div className="flex items-center space-x-4">
                     <div
-                        onClick={() => navigate("/my-space")}
+                        onClick={() =>
+                            navigate("https://github.com/armanulhaq")
+                        }
                         className="cursor-pointer"
                         aria-label="GitHub Profile"
                     >
@@ -46,6 +66,45 @@ export default function Header() {
                         />
                     </div>
                     <ModeToggle />
+                    {user ? (
+                        <div className="flex items-center gap-3">
+                            <img
+                                className="w-8 h-8 rounded-full"
+                                src={user?.photoURL || ""}
+                                alt=""
+                            />
+                            <p className="text-muted-foreground text-sm">
+                                Hi, {user?.displayName?.split(" ")[0]}
+                            </p>
+                            <Button
+                                onClick={async () => {
+                                    try {
+                                        await logout();
+                                        navigate("/"); // redirect after logout
+                                    } catch (err) {
+                                        console.error(err);
+                                        alert("Logout failed!");
+                                    }
+                                }}
+                            >
+                                <LogOut />
+                            </Button>
+                        </div>
+                    ) : (
+                        <Button
+                            onClick={async () => {
+                                try {
+                                    await loginWithGoogle();
+                                    navigate("/my-space"); // redirect after login
+                                } catch (err) {
+                                    console.error(err);
+                                    alert("Login failed!");
+                                }
+                            }}
+                        >
+                            Login
+                        </Button>
+                    )}
                 </div>
             </div>
         </header>
