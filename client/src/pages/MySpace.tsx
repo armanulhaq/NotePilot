@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/auth";
 import { LogOut } from "lucide-react";
-import Tiptap from "@/components/tiptap";
+import Tiptap from "@/components/Tiptap";
 import EmptyNoteState from "@/components/EmptyNoteSlate";
 import { useParams } from "react-router-dom";
 import {
@@ -196,10 +196,21 @@ export default function MySpace() {
                         </DialogContent>
                     </Dialog>
                 )}
-
-                <div className="min-h-[80vh] bg-muted-sidebar flex justify-center items-center">
-                    {params.id ? <Tiptap /> : <EmptyNoteState />}
-                </div>
+                {!allNotes.length && (
+                    <div className="flex flex-1 flex-col gap-4 p-4">
+                        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+                            <div className="bg-muted/50 aspect-video rounded-xl" />
+                            <div className="bg-muted/50 aspect-video rounded-xl" />
+                            <div className="bg-muted/50 aspect-video rounded-xl" />
+                        </div>
+                        <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
+                    </div>
+                )}
+                {allNotes.length && (
+                    <div className="min-h-[80vh] bg-muted-sidebar flex justify-center items-center">
+                        {params.id ? <Tiptap /> : <EmptyNoteState />}
+                    </div>
+                )}
             </SidebarInset>
         </SidebarProvider>
     );

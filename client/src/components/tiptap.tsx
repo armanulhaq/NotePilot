@@ -33,6 +33,7 @@ import {
     AlignRight,
     Link2,
     Save,
+    Trash,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -75,7 +76,7 @@ export default function FullTiptapEditor() {
     });
 
     const user = auth.currentUser;
-    const [allNotes, setAllNotes] = useState([]);
+    const [allNotes, setAllNotes] = useState<Note[]>([]);
     useEffect(() => {
         if (!user?.uid) return; // wait for auth to be ready
         const fetchNotes = async () => {
@@ -91,7 +92,7 @@ export default function FullTiptapEditor() {
                     }
                 );
                 const data = await response.json();
-                setAllNotes(data);
+                setAllNotes(data as Note[]);
             } catch (error) {
                 console.error("Error fetching notes:", error);
             }
@@ -104,21 +105,13 @@ export default function FullTiptapEditor() {
     const noteId = params?.id;
     console.log(noteId);
 
-    function fetchNote() {
-        if (!noteId) return;
-        const fetchNote = async () => {
-            allNotes.forEach((note: Note) => {
-                if (note.id === noteId) {
-                    editor?.commands.setContent(note.content);
-                }
-            });
-        };
-        fetchNote();
-    }
-
     useEffect(() => {
-        fetchNote();
-    }, [noteId]);
+        if (!noteId || !editor) return;
+        const note = allNotes.find((n) => n.id === noteId);
+        if (note) {
+            editor.commands.setContent(note.content || "");
+        }
+    }, [noteId, allNotes, editor]);
 
     if (!editor) return null;
 
@@ -126,7 +119,7 @@ export default function FullTiptapEditor() {
         `p-2 rounded hover:bg-gray-200 ${active ? "bg-gray-300" : ""}`;
 
     return (
-        <div className="border bg-background shadow-md rounded-md w-full h-[80vh] m-10 flex flex-col">
+        <div className="border bg-background shadow-md rounded-md w-full h-[80vh] m-4 lg:m-10 flex flex-col">
             <div className="flex flex-wrap gap-1 p-2 border-b justify-between">
                 <div className="flex">
                     <button
@@ -238,6 +231,15 @@ export default function FullTiptapEditor() {
                         }
                     >
                         <Save className="w-5 h-5" />
+                    </button>
+                    <button
+                        onClick={() => editor.chain().focus().undo().run()}
+                        className={
+                            buttonClass(editor.isActive("undo")) +
+                            " cursor-pointer"
+                        }
+                    >
+                        <Trash className="w-5 h-5" />
                     </button>
                 </div>
             </div>
