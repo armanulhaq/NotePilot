@@ -2,6 +2,8 @@ import { Sidebar, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
 import { useState } from "react";
 import { Eye, Pencil } from "lucide-react";
 import { Button } from "./ui/button";
+import { nanoid } from "nanoid";
+import { useNavigate } from "react-router-dom";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
     notes?: Note[]; // Added notes prop type
@@ -15,12 +17,15 @@ type Note = {
 };
 
 export function AppSidebar({ notes = [], ...props }: AppSidebarProps) {
+    const navigate = useNavigate();
+    const handleNewNote = () => {
+        const slug = nanoid(20); // e.g. abc123xyz
+        navigate(`/my-space/${slug}`);
+    };
     const [selectedNote, setSelectedNote] = useState<string | null>(null);
     const findNote: Note | undefined = notes.find(
         (note) => note.id === selectedNote
     );
-    console.log(findNote?.content);
-    console.log(selectedNote);
     return (
         <Sidebar {...props}>
             <SidebarHeader>
@@ -39,7 +44,9 @@ export function AppSidebar({ notes = [], ...props }: AppSidebarProps) {
                 </div>
             </SidebarHeader>
             <div className="flex w-full mx-2 px-4 my-3 ">
-                <Button className="cursor-pointer"> Create a new note</Button>
+                <Button className="cursor-pointer" onClick={handleNewNote}>
+                    Create a new note
+                </Button>
             </div>
             {notes.map((item, i) => (
                 <div

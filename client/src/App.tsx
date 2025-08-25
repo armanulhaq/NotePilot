@@ -10,6 +10,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/my-space" element={<MySpace />} />
+                <Route path="/my-space/:id" element={<MySpace />} />
             </Routes>
         </ThemeProvider>
     );

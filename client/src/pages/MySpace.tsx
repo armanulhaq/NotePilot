@@ -22,10 +22,15 @@ import { Button } from "@/components/ui/button";
 import { logout } from "@/auth";
 import { LogOut } from "lucide-react";
 import Tiptap from "@/components/tiptap";
+import EmptyNoteState from "@/components/EmptyNoteSlate";
+import { useParams } from "react-router-dom";
+import { nanoid } from "nanoid";
 
 export default function MySpace() {
     const navigate = useNavigate();
     const [user, setUser] = useState<User | null>(null);
+    const params = useParams();
+    console.log(params.id);
 
     // Listen for auth state changes
     useEffect(() => {
@@ -60,8 +65,6 @@ export default function MySpace() {
         };
         fetchNotes();
     }, [user]);
-    console.log(notes);
-    console.log(user);
     return (
         <SidebarProvider>
             <AppSidebar notes={notes} />
@@ -124,8 +127,8 @@ export default function MySpace() {
                         </BreadcrumbList>
                     </Breadcrumb>
                 </header>
-                <div className=" flex justify-center items-center">
-                    <Tiptap />
+                <div className="min-h-[80vh] bg-muted-sidebar flex justify-center items-center">
+                    {params.id ? <Tiptap /> : <EmptyNoteState />}
                 </div>
             </SidebarInset>
         </SidebarProvider>

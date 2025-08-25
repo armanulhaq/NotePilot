@@ -31,6 +31,7 @@ import {
     AlignCenter,
     AlignRight,
     Link2,
+    Save,
 } from "lucide-react";
 
 export default function FullTiptapEditor() {
@@ -69,80 +70,119 @@ export default function FullTiptapEditor() {
 
     return (
         <div className="border bg-background shadow-md rounded-md w-full h-[80vh] m-10 flex flex-col">
-            <div className="flex flex-wrap gap-1 p-2 border-b">
-                <button
-                    onClick={() => editor.chain().focus().toggleBold().run()}
-                    className={buttonClass(editor.isActive("bold"))}
-                >
-                    <Bold className="w-5 h-5" />
-                </button>
-                <button
-                    onClick={() => editor.chain().focus().toggleItalic().run()}
-                    className={buttonClass(editor.isActive("italic"))}
-                >
-                    <Italic className="w-5 h-5" />
-                </button>
-                <button
-                    onClick={() =>
-                        editor.chain().focus().toggleUnderline().run()
-                    }
-                    className={buttonClass(editor.isActive("underline"))}
-                >
-                    <UnderlineIcon className="w-5 h-5" />
-                </button>
-                <button
-                    onClick={() => editor.chain().focus().toggleStrike().run()}
-                    className={buttonClass(editor.isActive("strike"))}
-                >
-                    <Strikethrough className="w-5 h-5" />
-                </button>
-                <button
-                    onClick={() => editor.chain().focus().toggleCode().run()}
-                    className={buttonClass(editor.isActive("code"))}
-                >
-                    <CodeIcon className="w-5 h-5" />
-                </button>
-                <button
-                    onClick={() => {
-                        const url = prompt("Enter link URL");
-                        if (url)
-                            editor.chain().focus().setLink({ href: url }).run();
-                    }}
-                    className={buttonClass(editor.isActive("link"))}
-                >
-                    <Link2 className="w-5 h-5" />
-                </button>
+            <div className="flex flex-wrap gap-1 p-2 border-b justify-between">
+                <div className="flex">
+                    <button
+                        onClick={() =>
+                            editor.chain().focus().toggleBold().run()
+                        }
+                        className={buttonClass(editor.isActive("bold"))}
+                    >
+                        <Bold className="w-5 h-5" />
+                    </button>
+                    <button
+                        onClick={() =>
+                            editor.chain().focus().toggleItalic().run()
+                        }
+                        className={buttonClass(editor.isActive("italic"))}
+                    >
+                        <Italic className="w-5 h-5" />
+                    </button>
+                    <button
+                        onClick={() =>
+                            editor.chain().focus().toggleUnderline().run()
+                        }
+                        className={buttonClass(editor.isActive("underline"))}
+                    >
+                        <UnderlineIcon className="w-5 h-5" />
+                    </button>
+                    <button
+                        onClick={() =>
+                            editor.chain().focus().toggleStrike().run()
+                        }
+                        className={buttonClass(editor.isActive("strike"))}
+                    >
+                        <Strikethrough className="w-5 h-5" />
+                    </button>
+                    <button
+                        onClick={() =>
+                            editor.chain().focus().toggleCode().run()
+                        }
+                        className={buttonClass(editor.isActive("code"))}
+                    >
+                        <CodeIcon className="w-5 h-5" />
+                    </button>
+                    <button
+                        onClick={() => {
+                            const url = prompt("Enter link URL");
+                            if (url)
+                                editor
+                                    .chain()
+                                    .focus()
+                                    .setLink({ href: url })
+                                    .run();
+                        }}
+                        className={buttonClass(editor.isActive("link"))}
+                    >
+                        <Link2 className="w-5 h-5" />
+                    </button>
 
-                <button
-                    onClick={() =>
-                        editor.chain().focus().setTextAlign("left").run()
-                    }
-                    className={buttonClass(
-                        editor.isActive({ textAlign: "left" })
-                    )}
-                >
-                    <AlignLeft className="w-5 h-5" />
-                </button>
-                <button
-                    onClick={() =>
-                        editor.chain().focus().setTextAlign("center").run()
-                    }
-                    className={buttonClass(
-                        editor.isActive({ textAlign: "center" })
-                    )}
-                >
-                    <AlignCenter className="w-5 h-5" />
-                </button>
-                <button
-                    onClick={() =>
-                        editor.chain().focus().setTextAlign("right").run()
-                    }
-                    className={buttonClass(
-                        editor.isActive({ textAlign: "right" })
-                    )}
-                >
-                    <AlignRight className="w-5 h-5" />
-                </button>
+                    <div className="flex justify-between">
+                        <button
+                            onClick={() =>
+                                editor
+                                    .chain()
+                                    .focus()
+                                    .setTextAlign("left")
+                                    .run()
+                            }
+                            className={buttonClass(
+                                editor.isActive({ textAlign: "left" })
+                            )}
+                        >
+                            <AlignLeft className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={() =>
+                                editor
+                                    .chain()
+                                    .focus()
+                                    .setTextAlign("center")
+                                    .run()
+                            }
+                            className={buttonClass(
+                                editor.isActive({ textAlign: "center" })
+                            )}
+                        >
+                            <AlignCenter className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={() =>
+                                editor
+                                    .chain()
+                                    .focus()
+                                    .setTextAlign("right")
+                                    .run()
+                            }
+                            className={buttonClass(
+                                editor.isActive({ textAlign: "right" })
+                            )}
+                        >
+                            <AlignRight className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <button
+                        onClick={() => editor.chain().focus().undo().run()}
+                        className={
+                            buttonClass(editor.isActive("undo")) +
+                            " cursor-pointer"
+                        }
+                    >
+                        <Save className="w-5 h-5" />
+                    </button>
+                </div>
             </div>
 
             {/* Editor */}
