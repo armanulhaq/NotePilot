@@ -35,12 +35,34 @@ export default function MySpace() {
         // Cleanup subscription on unmount
         return () => unsubscribe();
     }, []);
-    if (!user) {
-        navigate("/");
-    }
+
+    const [notes, setNotes] = useState([]);
+
+    useEffect(() => {
+        const fetchNotes = async () => {
+            try {
+                const response = await fetch(
+                    "http://localhost:3000/api/notes/all-notes",
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${user?.uid}`,
+                        },
+                    }
+                );
+                const data = await response.json();
+                setNotes(data);
+            } catch (error) {
+                console.error("Error fetching notes:", error);
+            }
+        };
+        fetchNotes();
+    }, [user]);
+    console.log(notes);
     return (
         <SidebarProvider>
-            <AppSidebar />
+            <AppSidebar notes={notes} />
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
                     <SidebarTrigger className="-ml-1" />

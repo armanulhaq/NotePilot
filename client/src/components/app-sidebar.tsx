@@ -1,44 +1,20 @@
-import * as React from "react";
-
 import {
     Sidebar,
     SidebarContent,
     SidebarGroup,
-    SidebarGroupContent,
-    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
-    SidebarMenuItem,
     SidebarRail,
 } from "@/components/ui/sidebar";
 import { SearchForm } from "./search-form";
 
-// This is sample data.
-const data = {
-    navMain: [
-        {
-            title: "My Notebooks",
-            url: "#",
-            items: [
-                {
-                    title: "Personal",
-                    url: "#",
-                },
-                {
-                    title: "Work",
-                    url: "#",
-                },
-                {
-                    title: "Study",
-                    url: "#",
-                },
-            ],
-        },
-    ],
+type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
+    notes?: { title: string; url: string }[]; // Added notes prop type
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ notes = [], ...props }: AppSidebarProps) {
+    console.log(notes);
     return (
         <Sidebar {...props}>
             <SidebarHeader>
@@ -58,20 +34,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SearchForm />
             </SidebarHeader>
             <SidebarContent>
-                {data.navMain.map((item) => (
-                    <SidebarGroup key={item.title}>
-                        <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
-                        <SidebarGroupContent>
-                            <SidebarMenu>
-                                {item.items.map((item) => (
-                                    <SidebarMenuItem key={item.title}>
-                                        <SidebarMenuButton asChild>
-                                            <a href={item.url}>{item.title}</a>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                ))}
-                            </SidebarMenu>
-                        </SidebarGroupContent>
+                {notes.map((item, i) => (
+                    <SidebarGroup key={i}>
+                        <SidebarMenu>
+                            <SidebarMenuButton key={i}>
+                                <a href={item.title}>{item.title}</a>
+                            </SidebarMenuButton>
+                        </SidebarMenu>
                     </SidebarGroup>
                 ))}
             </SidebarContent>
