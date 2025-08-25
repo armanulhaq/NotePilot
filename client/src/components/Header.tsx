@@ -76,6 +76,7 @@ export default function Header() {
                                 Hi, {user?.displayName?.split(" ")[0]}
                             </p>
                             <Button
+                                className="cursor-pointer"
                                 onClick={async () => {
                                     try {
                                         await logout();
@@ -91,6 +92,7 @@ export default function Header() {
                         </div>
                     ) : (
                         <Button
+                            className="cursor-pointer"
                             onClick={async () => {
                                 try {
                                     await loginWithGoogle();

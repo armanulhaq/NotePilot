@@ -24,13 +24,48 @@ import { LogOut } from "lucide-react";
 import Tiptap from "@/components/tiptap";
 import EmptyNoteState from "@/components/EmptyNoteSlate";
 import { useParams } from "react-router-dom";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { nanoid } from "nanoid";
 
 export default function MySpace() {
     const navigate = useNavigate();
     const [user, setUser] = useState<User | null>(null);
+    const [allNotes, setAllNotes] = useState([]);
+    const [title, setTitle] = useState<string>("");
+
     const params = useParams();
-    console.log(params.id);
+    const isCreateNote = params.id === "createNote";
+
+    const handleCloseDialog = () => {
+        navigate("/my-space");
+    };
+
+    const handleConfirm = async () => {
+        const slug = nanoid(30); // Generate random slug
+        const note = await fetch(
+            "http://localhost:3000/api/notes/create-note",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${user?.uid}`,
+                },
+                body: JSON.stringify({ slug, title }),
+            }
+        );
+        if (!note.ok) {
+            throw new Error("Failed to create note");
+        }
+        navigate("/my-space"); // closes dialog
+        window.location.reload(); // force refresh to show new note (quick solution)
+    };
 
     // Listen for auth state changes
     useEffect(() => {
@@ -42,9 +77,8 @@ export default function MySpace() {
         return () => unsubscribe();
     }, []);
 
-    const [notes, setNotes] = useState([]);
-
     useEffect(() => {
+        if (!user?.uid) return; // wait for auth to be ready
         const fetchNotes = async () => {
             try {
                 const response = await fetch(
@@ -53,21 +87,22 @@ export default function MySpace() {
                         method: "GET",
                         headers: {
                             "Content-Type": "application/json",
-                            Authorization: `Bearer ${user?.uid}`,
+                            Authorization: `Bearer ${user.uid}`,
                         },
                     }
                 );
                 const data = await response.json();
-                setNotes(data);
+                setAllNotes(data);
             } catch (error) {
                 console.error("Error fetching notes:", error);
             }
         };
         fetchNotes();
     }, [user]);
+
     return (
         <SidebarProvider>
-            <AppSidebar notes={notes} />
+            <AppSidebar notes={allNotes} />
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
                     <SidebarTrigger className="-ml-1" />
@@ -114,7 +149,7 @@ export default function MySpace() {
                                     onClick={async () => {
                                         try {
                                             await logout();
-                                            navigate("/"); // redirect after logout
+                                            navigate("/");
                                         } catch (err) {
                                             console.error(err);
                                             alert("Logout failed!");
@@ -127,6 +162,41 @@ export default function MySpace() {
                         </BreadcrumbList>
                     </Breadcrumb>
                 </header>
+                {isCreateNote && (
+                    <Dialog open={true} onOpenChange={handleCloseDialog}>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Create a new note</DialogTitle>
+                                <DialogDescription>
+                                    Enter a title for your note.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <input
+                                type="text"
+                                placeholder="Note title"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                className="w-full p-2 border rounded"
+                            />
+                            <DialogFooter>
+                                <Button
+                                    variant="secondary"
+                                    onClick={handleCloseDialog}
+                                    className="cursor-pointer"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={handleConfirm}
+                                    className="cursor-pointer"
+                                >
+                                    Confirm
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                )}
+
                 <div className="min-h-[80vh] bg-muted-sidebar flex justify-center items-center">
                     {params.id ? <Tiptap /> : <EmptyNoteState />}
                 </div>

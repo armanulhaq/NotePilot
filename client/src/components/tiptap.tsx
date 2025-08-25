@@ -20,6 +20,7 @@ import {
     TableCell,
     TableHeader,
 } from "@tiptap/extension-table";
+import { auth } from "../firebase";
 
 import {
     Bold,
@@ -33,6 +34,16 @@ import {
     Link2,
     Save,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
+type Note = {
+    id: string;
+    user_id: string;
+    title: string;
+    content: string;
+    createdAt: string;
+};
 
 export default function FullTiptapEditor() {
     const editor = useEditor({
@@ -62,6 +73,52 @@ export default function FullTiptapEditor() {
             },
         },
     });
+
+    const user = auth.currentUser;
+    const [allNotes, setAllNotes] = useState([]);
+    useEffect(() => {
+        if (!user?.uid) return; // wait for auth to be ready
+        const fetchNotes = async () => {
+            try {
+                const response = await fetch(
+                    "http://localhost:3000/api/notes/all-notes",
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${user.uid}`,
+                        },
+                    }
+                );
+                const data = await response.json();
+                setAllNotes(data);
+            } catch (error) {
+                console.error("Error fetching notes:", error);
+            }
+        };
+        fetchNotes();
+    }, [user]);
+
+    console.log(allNotes);
+    const params = useParams();
+    const noteId = params?.id;
+    console.log(noteId);
+
+    function fetchNote() {
+        if (!noteId) return;
+        const fetchNote = async () => {
+            allNotes.forEach((note: Note) => {
+                if (note.id === noteId) {
+                    editor?.commands.setContent(note.content);
+                }
+            });
+        };
+        fetchNote();
+    }
+
+    useEffect(() => {
+        fetchNote();
+    }, [noteId]);
 
     if (!editor) return null;
 

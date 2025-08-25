@@ -12,6 +12,6 @@ model Notes {
     id String @id @default(uuid())
     user_id String
     title String
-    content String
+    content String?
     createdAt DateTime @default(now())
 }
