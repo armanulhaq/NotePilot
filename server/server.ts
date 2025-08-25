@@ -13,7 +13,6 @@ app.get("/", (req: Request, res: Response) => {
     res.send("Hello World!");
 });
 
-// Mount notes routes -> results in /api/notes/* (e.g., /api/notes/all-notes)
 app.use("/api/notes", notesRouter);
 
 app.listen(3000, () => {

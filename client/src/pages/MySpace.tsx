@@ -60,6 +60,7 @@ export default function MySpace() {
         fetchNotes();
     }, [user]);
     console.log(notes);
+    console.log(user);
     return (
         <SidebarProvider>
             <AppSidebar notes={notes} />
@@ -70,7 +71,7 @@ export default function MySpace() {
                         orientation="vertical"
                         className="mr-2 data-[orientation=vertical]:h-4"
                     />
-                    <Breadcrumb className="flex justify-between w-full mr-20">
+                    <Breadcrumb className="flex justify-between w-full md:mr-10 lg:mr-20">
                         <BreadcrumbList>
                             <BreadcrumbItem className="hidden md:block">
                                 <BreadcrumbLink href="/">
@@ -86,8 +87,23 @@ export default function MySpace() {
                             <BreadcrumbItem className="hidden md:block">
                                 <ModeToggle />
                             </BreadcrumbItem>
+
                             <BreadcrumbItem>
-                                Hi, {user?.displayName?.split(" ")[0]}
+                                {user?.photoURL ? (
+                                    <div className="flex items-center gap-2">
+                                        <img
+                                            src={user.photoURL}
+                                            alt="Profile"
+                                            className="w-8 h-8 rounded-full"
+                                        />
+                                        <span className="text-sm">
+                                            Hi,{" "}
+                                            {user?.displayName?.split(" ")[0]}
+                                        </span>
+                                    </div>
+                                ) : (
+                                    "No Profile"
+                                )}
                             </BreadcrumbItem>
                             <BreadcrumbItem>
                                 <Button

@@ -11,8 +11,7 @@ const getAllNotes = async (req: Request, res: Response) => {
             return res.status(401).json({ error: "Unauthorized" });
         }
 
-        const userId = authHeader.split(" ")[1]; // user?.uid
-        console.log("User ID:", userId);
+        const userId = authHeader.split(" ")[1];
 
         const notes = await prisma.notes.findMany({
             where: { user_id: userId },

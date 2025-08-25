@@ -1,20 +1,26 @@
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarGroup,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarRail,
-} from "@/components/ui/sidebar";
-import { SearchForm } from "./search-form";
+import { Sidebar, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
+import { useState } from "react";
+import { Eye, Pencil } from "lucide-react";
+import { Button } from "./ui/button";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
-    notes?: { title: string; url: string }[]; // Added notes prop type
+    notes?: Note[]; // Added notes prop type
+};
+type Note = {
+    id: string;
+    user_id: string;
+    title: string;
+    content: string;
+    createdAt: string;
 };
 
 export function AppSidebar({ notes = [], ...props }: AppSidebarProps) {
-    console.log(notes);
+    const [selectedNote, setSelectedNote] = useState<string | null>(null);
+    const findNote: Note | undefined = notes.find(
+        (note) => note.id === selectedNote
+    );
+    console.log(findNote?.content);
+    console.log(selectedNote);
     return (
         <Sidebar {...props}>
             <SidebarHeader>
@@ -31,19 +37,28 @@ export function AppSidebar({ notes = [], ...props }: AppSidebarProps) {
                     />
                     <span className="text-lg font-semibold">NotePilot</span>
                 </div>
-                <SearchForm />
             </SidebarHeader>
-            <SidebarContent>
-                {notes.map((item, i) => (
-                    <SidebarGroup key={i}>
-                        <SidebarMenu>
-                            <SidebarMenuButton key={i}>
-                                <a href={item.title}>{item.title}</a>
-                            </SidebarMenuButton>
-                        </SidebarMenu>
-                    </SidebarGroup>
-                ))}
-            </SidebarContent>
+            <div className="flex w-full mx-2 px-4 mb-3">
+                <Button>Create a new note</Button>
+            </div>
+            {notes.map((item, i) => (
+                <div
+                    className="py-2 mx-2 rounded cursor-pointer px-4 hover:bg-muted flex justify-between items-center"
+                    key={i}
+                >
+                    <div className="text-sm text-muted-foreground max-w-2/3 truncate">
+                        {item.title}
+                    </div>
+                    <div className="ml-auto flex gap-5">
+                        <span onClick={() => setSelectedNote(item.id)}>
+                            <Eye className="w-4 h-4 cursor-pointer text-muted-foreground hover:text-primary" />
+                        </span>
+                        <span onClick={() => setSelectedNote(item.id)}>
+                            <Pencil className="w-4 h-4 cursor-pointer text-muted-foreground hover:text-primary" />
+                        </span>
+                    </div>
+                </div>
+            ))}
             <SidebarRail />
         </Sidebar>
     );
