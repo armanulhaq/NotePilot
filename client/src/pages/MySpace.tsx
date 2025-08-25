@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/auth";
 import { LogOut } from "lucide-react";
+import Tiptap from "@/components/tiptap";
 
 export default function MySpace() {
     const navigate = useNavigate();
@@ -123,6 +124,9 @@ export default function MySpace() {
                         </BreadcrumbList>
                     </Breadcrumb>
                 </header>
+                <div className=" flex justify-center items-center">
+                    <Tiptap />
+                </div>
             </SidebarInset>
         </SidebarProvider>
     );

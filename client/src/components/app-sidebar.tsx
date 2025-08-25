@@ -38,8 +38,8 @@ export function AppSidebar({ notes = [], ...props }: AppSidebarProps) {
                     <span className="text-lg font-semibold">NotePilot</span>
                 </div>
             </SidebarHeader>
-            <div className="flex w-full mx-2 px-4 mb-3">
-                <Button>Create a new note</Button>
+            <div className="flex w-full mx-2 px-4 my-3 ">
+                <Button className="cursor-pointer"> Create a new note</Button>
             </div>
             {notes.map((item, i) => (
                 <div
