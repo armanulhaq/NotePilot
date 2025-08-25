@@ -19,7 +19,6 @@ export default function Header() {
         // Cleanup subscription on unmount
         return () => unsubscribe();
     }, []);
-    console.log(user);
 
     return (
         <header className="w-full fixed top-0 z-50 backdrop-blur-lg bg-background/90 text-foreground border-b">

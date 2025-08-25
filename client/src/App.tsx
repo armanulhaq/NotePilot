@@ -1,19 +1,18 @@
 import "./App.css";
-import Header from "./components/Header";
 import { ThemeProvider } from "./components/theme-provider";
-import Hero from "./components/Hero";
-import Features from "./components/Features";
-import CTA from "./components/CTA";
-import Footer from "./components/Footer";
+import Home from "./pages/Home";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import MySpace from "./pages/MySpace";
 
 function App() {
     return (
         <ThemeProvider>
-            <Header />
-            <Hero />
-            <Features />
-            <CTA />
-            <Footer />
+            <Router>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/my-space" element={<MySpace />} />
+                </Routes>
+            </Router>
         </ThemeProvider>
     );
 }

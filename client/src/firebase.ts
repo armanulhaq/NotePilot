@@ -2,13 +2,13 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAeqOCePX89HSelKr04OkBIx9cU_SzLxXw",
-    authDomain: "notepilot-156a1.firebaseapp.com",
-    projectId: "notepilot-156a1",
-    storageBucket: "notepilot-156a1.firebasestorage.app",
-    messagingSenderId: "464515820964",
-    appId: "1:464515820964:web:9f6c813a1c49865db66531",
-    measurementId: "G-XEPWPWM7JF",
+    apiKey: import.meta.env.VITE_FIREBASE_KEY,
+    authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_APP_ID,
+    measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase

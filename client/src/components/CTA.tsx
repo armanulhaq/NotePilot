@@ -12,8 +12,12 @@ export default function CallToAction() {
                     Fast, local-first, and built for code. Notes that work the
                     way you think.
                 </p>
-                <div className="mt-12 flex justify-center gap-4 flex-wrap">
-                    <Button size="lg" onClick={() => navigate("/my-space")}>
+                <div className="mt-12 flex justify-center gap-4">
+                    <Button
+                        className="cursor-pointer"
+                        size="lg"
+                        onClick={() => navigate("/my-space")}
+                    >
                         Get Started
                     </Button>
                 </div>

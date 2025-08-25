@@ -16,7 +16,11 @@ export default function Hero() {
                 </p>
 
                 <div className="mt-8 flex gap-4">
-                    <Button size="lg" onClick={() => navigate("/my-space")}>
+                    <Button
+                        className="cursor-pointer"
+                        size="lg"
+                        onClick={() => navigate("/my-space")}
+                    >
                         Start Writing
                     </Button>
                 </div>
