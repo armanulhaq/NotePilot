@@ -36,7 +36,7 @@ import {
     Trash,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 type Note = {
     id: string;
@@ -47,6 +47,7 @@ type Note = {
 };
 
 export default function FullTiptapEditor() {
+    const navigate = useNavigate();
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -99,11 +100,8 @@ export default function FullTiptapEditor() {
         };
         fetchNotes();
     }, [user]);
-
-    console.log(allNotes);
     const params = useParams();
     const noteId = params?.id;
-    console.log(noteId);
 
     useEffect(() => {
         if (!noteId || !editor) return;
@@ -114,6 +112,51 @@ export default function FullTiptapEditor() {
     }, [noteId, allNotes, editor]);
 
     if (!editor) return null;
+
+    const saveNote = async () => {
+        try {
+            const response = await fetch(
+                "http://localhost:3000/api/notes/update-note",
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${user?.uid}`,
+                    },
+                    body: JSON.stringify({
+                        id: noteId,
+                        content: editor.getHTML(),
+                    }),
+                }
+            );
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.error("Error saving note:", error);
+        }
+    };
+    const deleteNote = async () => {
+        try {
+            const response = await fetch(
+                "http://localhost:3000/api/notes/delete-note",
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${user?.uid}`,
+                    },
+                    body: JSON.stringify({
+                        id: noteId,
+                    }),
+                }
+            );
+            const data = await response.json();
+            console.log(data);
+            navigate("/my-space");
+        } catch (error) {
+            console.log("Error deleting the note", error);
+        }
+    };
 
     const buttonClass = (active: boolean) =>
         `p-2 rounded hover:bg-gray-200 ${active ? "bg-gray-300" : ""}`;
@@ -224,7 +267,7 @@ export default function FullTiptapEditor() {
                 </div>
                 <div>
                     <button
-                        onClick={() => editor.chain().focus().undo().run()}
+                        onClick={() => saveNote()}
                         className={
                             buttonClass(editor.isActive("undo")) +
                             " cursor-pointer"
@@ -233,7 +276,7 @@ export default function FullTiptapEditor() {
                         <Save className="w-5 h-5" />
                     </button>
                     <button
-                        onClick={() => editor.chain().focus().undo().run()}
+                        onClick={() => deleteNote()}
                         className={
                             buttonClass(editor.isActive("undo")) +
                             " cursor-pointer"
@@ -244,7 +287,6 @@ export default function FullTiptapEditor() {
                 </div>
             </div>
 
-            {/* Editor */}
             <EditorContent
                 editor={editor}
                 className="p-4 flex-1 rounded-md bg-sidebar overflow-auto prose max-w-full"

@@ -105,7 +105,7 @@ export default function MySpace() {
             <AppSidebar notes={allNotes} />
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-                    <SidebarTrigger className="-ml-1" />
+                    <SidebarTrigger className="-ml-1 cursor-pointer" />
                     <Separator
                         orientation="vertical"
                         className="mr-2 data-[orientation=vertical]:h-4"
@@ -128,20 +128,28 @@ export default function MySpace() {
                             </BreadcrumbItem>
 
                             <BreadcrumbItem>
-                                {user?.photoURL ? (
+                                {user?.photoURL && (
                                     <div className="flex items-center gap-2">
                                         <img
                                             src={user.photoURL}
                                             alt="Profile"
-                                            className="w-8 h-8 rounded-full"
+                                            className="w-8 h-8 rounded-full object-cover"
+                                            referrerPolicy="no-referrer"
+                                            onError={(e) => {
+                                                const initial =
+                                                    user?.displayName?.[0]?.toUpperCase() ||
+                                                    "U";
+                                                e.currentTarget.onerror = null;
+                                                e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                                    initial
+                                                )}&background=random&size=64&bold=true`;
+                                            }}
                                         />
                                         <span className="text-sm">
                                             Hi,{" "}
                                             {user?.displayName?.split(" ")[0]}
                                         </span>
                                     </div>
-                                ) : (
-                                    "No Profile"
                                 )}
                             </BreadcrumbItem>
                             <BreadcrumbItem>
@@ -196,7 +204,7 @@ export default function MySpace() {
                         </DialogContent>
                     </Dialog>
                 )}
-                {!allNotes.length && (
+                {/* {!allNotes.length && (
                     <div className="flex flex-1 flex-col gap-4 p-4">
                         <div className="grid auto-rows-min gap-4 md:grid-cols-3">
                             <div className="bg-muted/50 aspect-video rounded-xl" />
@@ -205,7 +213,8 @@ export default function MySpace() {
                         </div>
                         <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
                     </div>
-                )}
+                )} */}
+
                 {allNotes.length && (
                     <div className="min-h-[80vh] bg-muted-sidebar flex justify-center items-center">
                         {params.id ? <Tiptap /> : <EmptyNoteState />}

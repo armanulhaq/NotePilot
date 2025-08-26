@@ -54,4 +54,47 @@ const createNote = async (req: Request, res: Response) => {
     }
 };
 
-export { getAllNotes, createNote };
+const updateNote = async (req: Request, res: Response) => {
+    try {
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+
+        const userId = authHeader.split(" ")[1];
+
+        const { id, content } = req.body;
+
+        const note = await prisma.notes.update({
+            where: { id: id, user_id: userId },
+            data: { content },
+        });
+
+        res.json(note);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+const deleteNote = async (req: Request, res: Response) => {
+    try {
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+        const { id } = req.body;
+        const userId = authHeader.split(" ")[1];
+        const note = await prisma.notes.delete({
+            where: { id: id, user_id: userId },
+        });
+        res.json(note);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+export { getAllNotes, createNote, updateNote, deleteNote };
