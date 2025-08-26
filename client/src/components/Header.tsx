@@ -1,5 +1,5 @@
 import { ModeToggle } from "./mode-toggle";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginWithGoogle, logout } from "../auth";
 import { Button } from "./ui/button";
 import type { User } from "firebase/auth";
@@ -23,7 +23,7 @@ export default function Header() {
     return (
         <header className="w-full fixed top-0 z-50 backdrop-blur-lg bg-background/90 text-foreground border-b">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-                <div className="flex items-center space-x-3">
+                <Link to="/" className="flex items-center space-x-3">
                     <img
                         src="/icon-dark.png"
                         alt="NotePilot Icon"
@@ -39,13 +39,13 @@ export default function Header() {
                         className="block dark:hidden"
                     />
                     <span className="text-lg font-semibold">NotePilot</span>
-                </div>
+                </Link>
 
                 <div className="flex items-center space-x-4">
-                    <div
-                        onClick={() =>
-                            navigate("https://github.com/armanulhaq")
-                        }
+                    <Link
+                        to="https://github.com/armanulhaq"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="cursor-pointer"
                         aria-label="GitHub Profile"
                     >
@@ -63,7 +63,7 @@ export default function Header() {
                             width={30}
                             height={30}
                         />
-                    </div>
+                    </Link>
                     <ModeToggle />
                     {user ? (
                         <div className="flex items-center gap-3">

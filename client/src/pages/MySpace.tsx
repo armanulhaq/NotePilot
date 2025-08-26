@@ -38,6 +38,7 @@ export default function MySpace() {
     const navigate = useNavigate();
     const [user, setUser] = useState<User | null>(null);
     const [allNotes, setAllNotes] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [title, setTitle] = useState<string>("");
 
     const params = useParams();
@@ -95,6 +96,8 @@ export default function MySpace() {
                 setAllNotes(data);
             } catch (error) {
                 console.error("Error fetching notes:", error);
+            } finally {
+                setLoading(false);
             }
         };
         fetchNotes();
@@ -204,7 +207,7 @@ export default function MySpace() {
                         </DialogContent>
                     </Dialog>
                 )}
-                {/* {!allNotes.length && (
+                {loading && (
                     <div className="flex flex-1 flex-col gap-4 p-4">
                         <div className="grid auto-rows-min gap-4 md:grid-cols-3">
                             <div className="bg-muted/50 aspect-video rounded-xl" />
@@ -213,7 +216,7 @@ export default function MySpace() {
                         </div>
                         <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
                     </div>
-                )} */}
+                )}
 
                 {allNotes.length && (
                     <div className="min-h-[80vh] bg-muted-sidebar flex justify-center items-center">

@@ -1,6 +1,6 @@
 export default function EmptyNoteState() {
     return (
-        <div className="flex flex-col items-center justify-center min-h-full text-center px-6">
+        <div className="flex flex-col items-center justify-center h-full text-center px-6">
             <div className="mb-4">
                 <img
                     src="/write.svg"

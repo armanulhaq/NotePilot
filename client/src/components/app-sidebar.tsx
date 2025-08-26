@@ -1,7 +1,7 @@
 import { Sidebar, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
     notes?: Note[]; // Added notes prop type
@@ -17,6 +17,7 @@ type Note = {
 
 export function AppSidebar({ notes = [], ...props }: AppSidebarProps) {
     const navigate = useNavigate();
+    const params = useParams();
 
     const handleNewNote = () => {
         navigate(`/my-space/createNote`);
@@ -69,7 +70,9 @@ export function AppSidebar({ notes = [], ...props }: AppSidebarProps) {
                 notes.map((item) => (
                     <div
                         className={`${
-                            selectedNote === item.id ? "bg-muted" : ""
+                            selectedNote === item.id || params.id === item.id
+                                ? "bg-muted"
+                                : ""
                         } py-2 mx-2 rounded cursor-pointer px-4 hover:bg-muted flex justify-between items-center`}
                         key={item.id}
                         onClick={() => findNote(item.id)}
