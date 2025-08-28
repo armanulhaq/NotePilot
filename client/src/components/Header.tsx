@@ -38,12 +38,14 @@ export default function Header() {
                         height={30}
                         className="block dark:hidden"
                     />
-                    <span className="text-lg font-semibold">NotePilot</span>
+                    <span className="hidden md:block text-lg font-semibold">
+                        NotePilot
+                    </span>
                 </Link>
 
                 <div className="flex items-center space-x-4">
                     <Link
-                        to="https://github.com/armanulhaq"
+                        to="https://github.com/armanulhaq/NotePilot"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="cursor-pointer"
@@ -103,7 +105,15 @@ export default function Header() {
                                 }
                             }}
                         >
-                            Login
+                            Login with{" "}
+                            <span>
+                                <img
+                                    src="/google.png"
+                                    alt=""
+                                    width={15}
+                                    height={15}
+                                />
+                            </span>
                         </Button>
                     )}
                 </div>

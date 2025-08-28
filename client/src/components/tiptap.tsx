@@ -31,8 +31,6 @@ import {
     Link2,
     Save,
     Trash,
-    Undo,
-    Redo,
     Highlighter,
     List,
     ListOrdered,
@@ -40,6 +38,7 @@ import {
     Quote,
     ImageIcon,
     Minus,
+    Loader2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -97,6 +96,7 @@ export default function FullTiptapEditor() {
 
     const user = auth.currentUser;
     const [allNotes, setAllNotes] = useState<Note[]>([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!user?.uid) return; // wait for auth to be ready
@@ -136,6 +136,7 @@ export default function FullTiptapEditor() {
 
     const saveNote = async () => {
         try {
+            setLoading(true);
             const response = await fetch(
                 "http://localhost:3000/api/notes/update-note",
                 {
@@ -155,11 +156,14 @@ export default function FullTiptapEditor() {
             toast("Note saved successfully");
         } catch (error) {
             console.error("Error saving note:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
     const deleteNote = async () => {
         try {
+            setLoading(true);
             await fetch("http://localhost:3000/api/notes/delete-note", {
                 method: "DELETE",
                 headers: {
@@ -173,6 +177,7 @@ export default function FullTiptapEditor() {
         } catch (error) {
             console.log("Error deleting the note", error);
         } finally {
+            setLoading(false);
             toast("Note deleted successfully");
             setTimeout(() => {
                 window.location.href = "/my-space";
@@ -608,14 +613,22 @@ export default function FullTiptapEditor() {
                             variant="outline"
                             className="cursor-pointer"
                         >
-                            <Save className="w-4 h-4" />
+                            {loading ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <Save className="w-4 h-4" />
+                            )}
                         </Button>
                         <Button
                             onClick={deleteNote}
                             variant="outline"
-                            className="cursor-pointer "
+                            className="cursor-pointer hover:bg-red-100"
                         >
-                            <Trash className="w-4 h-4" />
+                            {loading ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <Trash className="w-4 h-4" />
+                            )}
                         </Button>
                     </div>
                 </div>

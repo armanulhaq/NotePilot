@@ -240,7 +240,7 @@ export default function MySpace({
                     </div>
                 )}
 
-                {allNotes.length && (
+                {!loading && (
                     <div className="min-h-[80vh] bg-muted-sidebar flex justify-center items-center">
                         {params.id ? <Tiptap /> : <EmptyNoteState />}
                     </div>

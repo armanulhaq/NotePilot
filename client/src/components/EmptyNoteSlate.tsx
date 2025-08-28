@@ -8,9 +8,7 @@ export default function EmptyNoteState() {
                     className="w-100 h-100 mx-auto"
                 />
             </div>
-            <h2 className="text-2xl font-semibold mb-2 text-muted-foreground">
-                No note selected
-            </h2>
+            <h2 className="text-2xl font-semibold">No note selected</h2>
             <p className="text-muted-foreground mb-4">
                 Select a note from the sidebar or create a new one to get
                 started.
