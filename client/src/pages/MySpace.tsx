@@ -35,6 +35,8 @@ import {
 import { nanoid } from "nanoid";
 import { toast } from "sonner";
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL as string;
+
 export default function MySpace({
     user,
     setUser,
@@ -64,7 +66,7 @@ export default function MySpace({
         try {
             const slug = nanoid(30); // Generate random slug
             const note = await fetch(
-                "http://localhost:3000/api/notes/create-note",
+                `${API_BASE}/api/notes/create-note`,
                 {
                     method: "POST",
                     headers: {
@@ -105,7 +107,7 @@ export default function MySpace({
         const fetchNotes = async () => {
             try {
                 const response = await fetch(
-                    "http://localhost:3000/api/notes/all-notes",
+                    `${API_BASE}/api/notes/all-notes`,
                     {
                         method: "GET",
                         headers: {

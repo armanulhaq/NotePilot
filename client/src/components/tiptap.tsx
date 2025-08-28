@@ -45,6 +45,8 @@ import { useParams } from "react-router-dom";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL as string;
+
 type Note = {
     id: string;
     user_id: string;
@@ -103,7 +105,7 @@ export default function FullTiptapEditor() {
         const fetchNotes = async () => {
             try {
                 const response = await fetch(
-                    "http://localhost:3000/api/notes/all-notes",
+                    `${API_BASE}/api/notes/all-notes`,
                     {
                         method: "GET",
                         headers: {
@@ -138,7 +140,7 @@ export default function FullTiptapEditor() {
         try {
             setLoading(true);
             const response = await fetch(
-                "http://localhost:3000/api/notes/update-note",
+                `${API_BASE}/api/notes/update-note`,
                 {
                     method: "PUT",
                     headers: {
@@ -164,7 +166,7 @@ export default function FullTiptapEditor() {
     const deleteNote = async () => {
         try {
             setLoading(true);
-            await fetch("http://localhost:3000/api/notes/delete-note", {
+            await fetch(`${API_BASE}/api/notes/delete-note`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
