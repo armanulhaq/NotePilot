@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/auth";
 import { LogOut } from "lucide-react";
-import Tiptap from "@/components/Tiptap";
+import Tiptap from "@/components/tiptap";
 import EmptyNoteState from "@/components/EmptyNoteSlate";
 import { useParams } from "react-router-dom";
 import {
