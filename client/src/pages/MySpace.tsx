@@ -65,17 +65,14 @@ export default function MySpace({
         if (!user?.uid) return;
         try {
             const slug = nanoid(30); // Generate random slug
-            const note = await fetch(
-                `${API_BASE}/api/notes/create-note`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${user?.uid}`,
-                    },
-                    body: JSON.stringify({ slug, title }),
-                }
-            );
+            const note = await fetch(`${API_BASE}/api/notes/create-note`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${user?.uid}`,
+                },
+                body: JSON.stringify({ slug, title }),
+            });
             if (!note.ok) {
                 throw new Error("Failed to create note");
             }
