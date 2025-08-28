@@ -33,6 +33,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { nanoid } from "nanoid";
+import { toast } from "sonner";
 
 export default function MySpace() {
     const navigate = useNavigate();
@@ -49,23 +50,33 @@ export default function MySpace() {
     };
 
     const handleConfirm = async () => {
-        const slug = nanoid(30); // Generate random slug
-        const note = await fetch(
-            "http://localhost:3000/api/notes/create-note",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${user?.uid}`,
-                },
-                body: JSON.stringify({ slug, title }),
+        if (!user?.uid) return;
+        try {
+            const slug = nanoid(30); // Generate random slug
+            const note = await fetch(
+                "http://localhost:3000/api/notes/create-note",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${user?.uid}`,
+                    },
+                    body: JSON.stringify({ slug, title }),
+                }
+            );
+            if (!note.ok) {
+                throw new Error("Failed to create note");
             }
-        );
-        if (!note.ok) {
-            throw new Error("Failed to create note");
+            navigate("/my-space");
+        } catch (error) {
+            console.error("Error creating note:", error);
+        } finally {
+            setTitle("");
+            toast("Note created successfully");
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500); // 1.5 seconds delay
         }
-        navigate("/my-space"); // closes dialog
-        window.location.reload(); // force refresh to show new note (quick solution)
     };
 
     // Listen for auth state changes

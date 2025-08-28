@@ -1,19 +1,16 @@
-"use client";
-
+import "prosemirror-view/style/prosemirror.css";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
-import Link from "@tiptap/extension-link";
 import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
-import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
-import Code from "@tiptap/extension-code";
+import Underline from "@tiptap/extension-underline";
+import Link from "@tiptap/extension-link";
 import {
     Table,
     TableRow,
@@ -34,9 +31,20 @@ import {
     Link2,
     Save,
     Trash,
+    Undo,
+    Redo,
+    Highlighter,
+    List,
+    ListOrdered,
+    SquareChevronRight,
+    Quote,
+    ImageIcon,
+    Minus,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { Button } from "./ui/button";
+import { toast } from "sonner";
 
 type Note = {
     id: string;
@@ -47,15 +55,21 @@ type Note = {
 };
 
 export default function FullTiptapEditor() {
-    const navigate = useNavigate();
     const editor = useEditor({
         extensions: [
-            StarterKit,
-            Underline,
-            Link,
+            StarterKit.configure({
+                // Disable the default heading extension from StarterKit
+                heading: {
+                    levels: [1, 2, 3, 4, 5, 6],
+                },
+            }),
             TextAlign.configure({ types: ["heading", "paragraph"] }),
             Highlight,
-            Image,
+            Image.configure({
+                HTMLAttributes: {
+                    class: "max-w-xs max-h-64 object-contain rounded border",
+                },
+            }),
             Placeholder.configure({ placeholder: "Start typing..." }),
             Table.configure({ resizable: true }),
             TableRow,
@@ -63,21 +77,27 @@ export default function FullTiptapEditor() {
             TableCell,
             TaskList,
             TaskItem,
-            HorizontalRule,
             Subscript,
             Superscript,
-            Code,
+            Underline,
+            Link.configure({
+                openOnClick: false,
+                HTMLAttributes: {
+                    class: "text-blue-600 underline cursor-pointer",
+                },
+            }),
         ],
         content: ``,
         editorProps: {
             attributes: {
-                class: "h-[100%] min-h-[100%] rounded-md px-3 focus:outline-none", // important for full height
+                class: "h-[100%] min-h-[100%] rounded-md px-3 focus:outline-none prose prose-sm sm:prose lg:prose-lg max-w-none",
             },
         },
     });
 
     const user = auth.currentUser;
     const [allNotes, setAllNotes] = useState<Note[]>([]);
+
     useEffect(() => {
         if (!user?.uid) return; // wait for auth to be ready
         const fetchNotes = async () => {
@@ -100,6 +120,7 @@ export default function FullTiptapEditor() {
         };
         fetchNotes();
     }, [user]);
+
     const params = useParams();
     const noteId = params?.id;
 
@@ -131,97 +152,392 @@ export default function FullTiptapEditor() {
             );
             const data = await response.json();
             console.log(data);
+            toast("Note saved successfully");
         } catch (error) {
             console.error("Error saving note:", error);
         }
     };
+
     const deleteNote = async () => {
         try {
-            const response = await fetch(
-                "http://localhost:3000/api/notes/delete-note",
-                {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${user?.uid}`,
-                    },
-                    body: JSON.stringify({
-                        id: noteId,
-                    }),
-                }
-            );
-            const data = await response.json();
-            console.log(data);
-            navigate("/my-space");
+            await fetch("http://localhost:3000/api/notes/delete-note", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${user?.uid}`,
+                },
+                body: JSON.stringify({
+                    id: noteId,
+                }),
+            });
         } catch (error) {
             console.log("Error deleting the note", error);
+        } finally {
+            toast("Note deleted successfully");
+            setTimeout(() => {
+                window.location.href = "/my-space";
+            }, 1500); // 1.5 seconds delay
         }
     };
 
+    const insertImage = () => {
+        const url = window.prompt("Enter image URL");
+        if (url) {
+            editor.chain().focus().setImage({ src: url }).run();
+        }
+    };
+
+    const addLink = () => {
+        const previousUrl = editor.getAttributes("link").href;
+        const url = window.prompt("URL", previousUrl);
+
+        // cancelled
+        if (url === null) {
+            return;
+        }
+
+        // empty
+        if (url === "") {
+            editor.chain().focus().extendMarkRange("link").unsetLink().run();
+            return;
+        }
+
+        // update link
+        editor
+            .chain()
+            .focus()
+            .extendMarkRange("link")
+            .setLink({ href: url })
+            .run();
+    };
+
+    // Improved button class function that properly handles active states
     const buttonClass = (active: boolean) =>
-        `p-2 rounded hover:bg-gray-200 ${active ? "bg-gray-300" : ""}`;
+        `p-2 rounded hover:bg-gray-200 transition-colors ${
+            active ? "bg-blue-100 border-blue-300" : "bg-white border-gray-300"
+        } border`;
 
     return (
-        <div className="border bg-background shadow-md rounded-md w-full h-[80vh] m-4 lg:m-10 flex flex-col">
-            <div className="flex flex-wrap gap-1 p-2 border-b justify-between">
-                <div className="flex">
-                    <button
-                        onClick={() =>
-                            editor.chain().focus().toggleBold().run()
-                        }
-                        className={buttonClass(editor.isActive("bold"))}
-                    >
-                        <Bold className="w-5 h-5" />
-                    </button>
-                    <button
-                        onClick={() =>
-                            editor.chain().focus().toggleItalic().run()
-                        }
-                        className={buttonClass(editor.isActive("italic"))}
-                    >
-                        <Italic className="w-5 h-5" />
-                    </button>
-                    <button
-                        onClick={() =>
-                            editor.chain().focus().toggleUnderline().run()
-                        }
-                        className={buttonClass(editor.isActive("underline"))}
-                    >
-                        <UnderlineIcon className="w-5 h-5" />
-                    </button>
-                    <button
-                        onClick={() =>
-                            editor.chain().focus().toggleStrike().run()
-                        }
-                        className={buttonClass(editor.isActive("strike"))}
-                    >
-                        <Strikethrough className="w-5 h-5" />
-                    </button>
-                    <button
-                        onClick={() =>
-                            editor.chain().focus().toggleCode().run()
-                        }
-                        className={buttonClass(editor.isActive("code"))}
-                    >
-                        <CodeIcon className="w-5 h-5" />
-                    </button>
-                    <button
-                        onClick={() => {
-                            const url = prompt("Enter link URL");
-                            if (url)
+        <>
+            <style>{`
+                .ProseMirror {
+                    outline: none;
+                    padding: 1rem;
+                }
+                .ProseMirror h1 {
+                    font-size: 2em;
+                    font-weight: bold;
+                    margin: 1em 0 0.5em 0;
+                    line-height: 1.2;
+                }
+                .ProseMirror h2 {
+                    font-size: 1.5em;
+                    font-weight: bold;
+                    margin: 0.83em 0 0.5em 0;
+                    line-height: 1.2;
+                }
+                .ProseMirror h3 {
+                    font-size: 1.17em;
+                    font-weight: bold;
+                    margin: 0.83em 0 0.5em 0;
+                    line-height: 1.2;
+                }
+                .ProseMirror p {
+                    margin: 0.5em 0;
+                    line-height: 1.6;
+                }
+                .ProseMirror ul, .ProseMirror ol {
+                    padding-left: 2rem;
+                    margin: 1rem 0;
+                }
+                .ProseMirror ul {
+                    list-style-type: disc;
+                }
+                .ProseMirror ol {
+                    list-style-type: decimal;
+                }
+                .ProseMirror li {
+                    margin: 0.5rem 0;
+                    position: relative;
+                }
+                .ProseMirror ul li::marker {
+                    color: hsl(var(--foreground));
+                    font-size: 1rem;
+                }
+                .ProseMirror ol li::marker {
+                    color: hsl(var(--foreground));
+                    font-weight: 500;
+                }
+                .ProseMirror blockquote {
+                    border-left: 4px solid #ddd;
+                    padding-left: 1em;
+                    margin: 1em 0;
+                    font-style: italic;
+                    color: #666;
+                }
+                .ProseMirror pre {
+                    background: hsl(var(--muted));
+                    color: hsl(var(--muted-foreground));
+                    border: 1px solid hsl(var(--border));
+                    border-radius: 6px;
+                    padding: 1rem;
+                    overflow-x: auto;
+                    margin: 1em 0;
+                    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+                }
+                .ProseMirror code {
+                    background: hsl(var(--muted));
+                    color: hsl(var(--foreground));
+                    padding: 0.2em 0.4em;
+                    border-radius: 4px;
+                    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+                    font-size: 0.875rem;
+                    border: 1px solid hsl(var(--border));
+                }
+                .ProseMirror pre code {
+                    background: none;
+                    padding: 0;
+                    border: none;
+                    color: inherit;
+                }
+                .ProseMirror img {
+                    max-width: 300px;
+                    max-height: 200px;
+                    height: auto;
+                    border-radius: 8px;
+                    border: 1px solid #ddd;
+                    display: block;
+                    margin: 0.5em 0;
+                }
+                .ProseMirror hr {
+                    border: none;
+                    border-top: 2px solid #ddd;
+                    margin: 2em 0;
+                }
+                .ProseMirror .highlight {
+                    background-color: #fff3cd;
+                    padding: 0.1em 0.2em;
+                    border-radius: 2px;
+                }
+                .ProseMirror ul[data-type="taskList"] {
+                    list-style: none;
+                    padding-left: 0;
+                    margin: 1rem 0;
+                }
+                .ProseMirror ul[data-type="taskList"] li {
+                    display: flex;
+                    align-items: flex-start;
+                    margin: 0.75rem 0;
+                    padding-left: 0;
+                }
+                .ProseMirror ul[data-type="taskList"] li > label {
+                    margin-right: 0.75rem;
+                    margin-top: 0.125rem;
+                    user-select: none;
+                    cursor: pointer;
+                    flex-shrink: 0;
+                }
+                .ProseMirror ul[data-type="taskList"] li > label > input[type="checkbox"] {
+                    width: 1rem;
+                    height: 1rem;
+                    accent-color: hsl(var(--primary));
+                }
+                .ProseMirror ul[data-type="taskList"] li > div {
+                    flex: 1;
+                    line-height: 1.5;
+                }
+                .ProseMirror ul[data-type="taskList"] li[data-checked="true"] > div {
+                    text-decoration: line-through;
+                    opacity: 0.6;
+                }
+            `}</style>
+            <div className="border bg-background shadow-md rounded-md w-full h-[80vh] m-4 lg:m-10 flex flex-col">
+                <div className="flex flex-wrap gap-2 p-2 border-b justify-between">
+                    <div className="flex flex-wrap gap-1">
+                        <Button
+                            onClick={() =>
+                                editor.chain().focus().toggleBold().run()
+                            }
+                            variant="outline"
+                            className={buttonClass(editor.isActive("bold"))}
+                        >
+                            <Bold className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            onClick={() =>
+                                editor.chain().focus().toggleItalic().run()
+                            }
+                            variant="outline"
+                            className={buttonClass(editor.isActive("italic"))}
+                        >
+                            <Italic className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            onClick={() =>
+                                editor.chain().focus().toggleUnderline().run()
+                            }
+                            variant="outline"
+                            className={buttonClass(
+                                editor.isActive("underline")
+                            )}
+                        >
+                            <UnderlineIcon className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            onClick={() =>
+                                editor.chain().focus().toggleStrike().run()
+                            }
+                            variant="outline"
+                            className={buttonClass(editor.isActive("strike"))}
+                        >
+                            <Strikethrough className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            onClick={() =>
+                                editor.chain().focus().toggleHighlight().run()
+                            }
+                            variant="outline"
+                            className={buttonClass(
+                                editor.isActive("highlight")
+                            )}
+                        >
+                            <Highlighter className="w-4 h-4" />
+                        </Button>
+
+                        <Button
+                            onClick={() =>
+                                editor.chain().focus().setParagraph().run()
+                            }
+                            variant="outline"
+                        >
+                            P
+                        </Button>
+                        <Button
+                            onClick={() =>
                                 editor
                                     .chain()
                                     .focus()
-                                    .setLink({ href: url })
-                                    .run();
-                        }}
-                        className={buttonClass(editor.isActive("link"))}
-                    >
-                        <Link2 className="w-5 h-5" />
-                    </button>
+                                    .toggleHeading({ level: 1 })
+                                    .run()
+                            }
+                            variant="outline"
+                            className={buttonClass(
+                                editor.isActive("heading", { level: 1 })
+                            )}
+                        >
+                            H1
+                        </Button>
+                        <Button
+                            onClick={() =>
+                                editor
+                                    .chain()
+                                    .focus()
+                                    .toggleHeading({ level: 2 })
+                                    .run()
+                            }
+                            variant="outline"
+                            className={buttonClass(
+                                editor.isActive("heading", { level: 2 })
+                            )}
+                        >
+                            H2
+                        </Button>
+                        <Button
+                            onClick={() =>
+                                editor
+                                    .chain()
+                                    .focus()
+                                    .toggleHeading({ level: 3 })
+                                    .run()
+                            }
+                            variant="outline"
+                            className={buttonClass(
+                                editor.isActive("heading", { level: 3 })
+                            )}
+                        >
+                            H3
+                        </Button>
+                        <Button
+                            onClick={() =>
+                                editor.chain().focus().toggleBulletList().run()
+                            }
+                            variant="outline"
+                            className={buttonClass(
+                                editor.isActive("bulletList")
+                            )}
+                        >
+                            <List className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            onClick={() =>
+                                editor.chain().focus().toggleOrderedList().run()
+                            }
+                            variant="outline"
+                            className={buttonClass(
+                                editor.isActive("orderedList")
+                            )}
+                        >
+                            <ListOrdered className="w-4 h-4" />
+                        </Button>
 
-                    <div className="flex justify-between">
-                        <button
+                        <Button
+                            onClick={() =>
+                                editor.chain().focus().toggleCode().run()
+                            }
+                            variant="outline"
+                            className={buttonClass(editor.isActive("code"))}
+                        >
+                            <CodeIcon className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            onClick={() =>
+                                editor.chain().focus().toggleCodeBlock().run()
+                            }
+                            variant="outline"
+                            className={buttonClass(
+                                editor.isActive("codeBlock")
+                            )}
+                        >
+                            <SquareChevronRight className="w-4 h-4" />
+                        </Button>
+
+                        <Button
+                            onClick={() =>
+                                editor.chain().focus().toggleBlockquote().run()
+                            }
+                            variant="outline"
+                            className={buttonClass(
+                                editor.isActive("blockquote")
+                            )}
+                        >
+                            <Quote />
+                        </Button>
+
+                        <Button
+                            onClick={addLink}
+                            variant="outline"
+                            className={buttonClass(editor.isActive("link"))}
+                        >
+                            <Link2 className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            onClick={insertImage}
+                            variant="outline"
+                            className={buttonClass(false)}
+                        >
+                            <ImageIcon />
+                        </Button>
+
+                        <Button
+                            onClick={() =>
+                                editor.chain().focus().setHorizontalRule().run()
+                            }
+                            variant="outline"
+                            className={buttonClass(false)}
+                        >
+                            <Minus className="w-4 h-4" />
+                        </Button>
+                        <Button
                             onClick={() =>
                                 editor
                                     .chain()
@@ -229,13 +545,14 @@ export default function FullTiptapEditor() {
                                     .setTextAlign("left")
                                     .run()
                             }
+                            variant="outline"
                             className={buttonClass(
                                 editor.isActive({ textAlign: "left" })
                             )}
                         >
-                            <AlignLeft className="w-5 h-5" />
-                        </button>
-                        <button
+                            <AlignLeft className="w-4 h-4" />
+                        </Button>
+                        <Button
                             onClick={() =>
                                 editor
                                     .chain()
@@ -243,13 +560,14 @@ export default function FullTiptapEditor() {
                                     .setTextAlign("center")
                                     .run()
                             }
+                            variant="outline"
                             className={buttonClass(
                                 editor.isActive({ textAlign: "center" })
                             )}
                         >
-                            <AlignCenter className="w-5 h-5" />
-                        </button>
-                        <button
+                            <AlignCenter className="w-4 h-4" />
+                        </Button>
+                        <Button
                             onClick={() =>
                                 editor
                                     .chain()
@@ -257,40 +575,41 @@ export default function FullTiptapEditor() {
                                     .setTextAlign("right")
                                     .run()
                             }
+                            variant="outline"
                             className={buttonClass(
                                 editor.isActive({ textAlign: "right" })
                             )}
                         >
-                            <AlignRight className="w-5 h-5" />
-                        </button>
+                            <AlignRight className="w-4 h-4" />
+                        </Button>
+                    </div>
+
+                    <div className="flex gap-1">
+                        <Button
+                            onClick={saveNote}
+                            variant="outline"
+                            className="cursor-pointer"
+                        >
+                            <Save className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            onClick={deleteNote}
+                            variant="outline"
+                            className="cursor-pointer "
+                        >
+                            <Trash className="w-4 h-4" />
+                        </Button>
                     </div>
                 </div>
-                <div>
-                    <button
-                        onClick={() => saveNote()}
-                        className={
-                            buttonClass(editor.isActive("undo")) +
-                            " cursor-pointer"
-                        }
-                    >
-                        <Save className="w-5 h-5" />
-                    </button>
-                    <button
-                        onClick={() => deleteNote()}
-                        className={
-                            buttonClass(editor.isActive("undo")) +
-                            " cursor-pointer"
-                        }
-                    >
-                        <Trash className="w-5 h-5" />
-                    </button>
-                </div>
-            </div>
 
-            <EditorContent
-                editor={editor}
-                className="p-4 flex-1 rounded-md bg-sidebar overflow-auto prose max-w-full"
-            />
-        </div>
+                <EditorContent
+                    editor={editor}
+                    className="p-4 flex-1 rounded-md bg-sidebar overflow-auto focus:outline-none"
+                    style={{
+                        minHeight: "300px",
+                    }}
+                />
+            </div>
+        </>
     );
 }

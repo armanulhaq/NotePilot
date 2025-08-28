@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { useNavigate, useParams } from "react-router-dom";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
-    notes?: Note[]; // Added notes prop type
+    notes?: Note[];
 };
 
 type Note = {
@@ -52,7 +52,7 @@ export function AppSidebar({ notes = [], ...props }: AppSidebarProps) {
                     <span className="text-lg font-semibold">NotePilot</span>
                 </div>
             </SidebarHeader>
-            <div className="flex w-full mx-2 px-4 my-3 ">
+            <div className="flex w-full m-4">
                 <Button className="cursor-pointer" onClick={handleNewNote}>
                     Create a new note
                 </Button>
