@@ -1,8 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import type { User } from "firebase/auth";
+import { toast } from "sonner";
 
-export default function Hero() {
+export default function Hero({ user }: { user: User | null }) {
     const navigate = useNavigate();
+
+    const startWriting = () => {
+        if (user) {
+            navigate("/my-space");
+        } else {
+            toast("Please login to start writing");
+        }
+    };
+
     return (
         <section className="bg-background text-foreground pt-60 pb-20">
             <div className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
@@ -19,7 +30,7 @@ export default function Hero() {
                     <Button
                         className="cursor-pointer"
                         size="lg"
-                        onClick={() => navigate("/my-space")}
+                        onClick={startWriting}
                     >
                         Start Writing
                     </Button>

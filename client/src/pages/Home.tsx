@@ -3,12 +3,13 @@ import Hero from "../components/Hero";
 import Features from "../components/Features";
 import CTA from "../components/CTA";
 import Footer from "../components/Footer";
+import type { User } from "firebase/auth";
 
-const Home = () => {
+const Home = ({ user }: { user: User | null }) => {
     return (
         <div>
             <Header />
-            <Hero />
+            <Hero user={user} />
             <Features />
             <CTA />
             <Footer />

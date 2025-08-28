@@ -35,9 +35,14 @@ import {
 import { nanoid } from "nanoid";
 import { toast } from "sonner";
 
-export default function MySpace() {
+export default function MySpace({
+    user,
+    setUser,
+}: {
+    user: User | null;
+    setUser: (user: User | null) => void;
+}) {
     const navigate = useNavigate();
-    const [user, setUser] = useState<User | null>(null);
     const [allNotes, setAllNotes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [title, setTitle] = useState<string>("");
@@ -48,7 +53,11 @@ export default function MySpace() {
     const handleCloseDialog = () => {
         navigate("/my-space");
     };
-
+    useEffect(() => {
+        if (!user?.displayName) {
+            navigate("/");
+        }
+    }, []);
     const handleConfirm = async () => {
         if (!user?.uid) return;
         try {

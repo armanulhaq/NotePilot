@@ -29,7 +29,6 @@ export function AppSidebar({ notes = [], ...props }: AppSidebarProps) {
         if (note) {
             setSelectedNote(id);
         }
-        console.log(note);
         navigate(`/my-space/${id}`);
     };
     return (
