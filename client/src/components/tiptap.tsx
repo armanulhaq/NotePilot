@@ -275,30 +275,48 @@ export default function FullTiptapEditor() {
                     font-style: italic;
                     color: #666;
                 }
+                /* Code block */
                 .ProseMirror pre {
-                    background: hsl(var(--muted));
-                    color: hsl(var(--muted-foreground));
-                    border: 1px solid hsl(var(--border));
-                    border-radius: 6px;
-                    padding: 1rem;
-                    overflow-x: auto;
+                    background: #0f172a; /* slate-900 */
+                    color: #e2e8f0; /* slate-200 */
+                    border: 1px solid rgba(148, 163, 184, 0.25); /* slate-400/25 */
+                    border-radius: 8px;
+                    padding: 0.875rem 1rem;
+                    overflow: auto;
                     margin: 1em 0;
+                    line-height: 1.6;
+                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
                     font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+                    font-size: 0.9rem;
                 }
+                /* Inline code */
                 .ProseMirror code {
-                    background: hsl(var(--muted));
+                    background: rgba(2, 6, 23, 0.06); /* slate-950/6 */
                     color: hsl(var(--foreground));
-                    padding: 0.2em 0.4em;
+                    padding: 0.15em 0.4em;
                     border-radius: 4px;
+                    border: 1px solid hsl(var(--border));
                     font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
                     font-size: 0.875rem;
-                    border: 1px solid hsl(var(--border));
                 }
+                /* Avoid double styling inside code blocks */
                 .ProseMirror pre code {
-                    background: none;
+                    background: transparent;
                     padding: 0;
-                    border: none;
+                    border: 0;
                     color: inherit;
+                    font-size: inherit;
+                }
+                /* Dark mode adjustments (if a .dark class is present on root) */
+                .dark .ProseMirror code {
+                    background: rgba(148, 163, 184, 0.15); /* slate-400/15 */
+                    border-color: rgba(148, 163, 184, 0.25);
+                    color: #e2e8f0;
+                }
+                .dark .ProseMirror pre {
+                    background: #0b1020; /* slightly darker */
+                    color: #e6edf3;
+                    border-color: rgba(148, 163, 184, 0.25);
                 }
                 .ProseMirror img {
                     max-width: 300px;

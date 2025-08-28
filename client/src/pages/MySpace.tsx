@@ -44,6 +44,7 @@ export default function MySpace({
 }) {
     const navigate = useNavigate();
     const [allNotes, setAllNotes] = useState([]);
+    const [loadingAuth, setLoadingAuth] = useState(true);
     const [loading, setLoading] = useState(true);
     const [title, setTitle] = useState<string>("");
 
@@ -54,10 +55,10 @@ export default function MySpace({
         navigate("/my-space");
     };
     useEffect(() => {
-        if (!user?.displayName) {
+        if (!loadingAuth && !user) {
             navigate("/");
         }
-    }, []);
+    }, [loadingAuth, user, navigate]);
     const handleConfirm = async () => {
         if (!user?.uid) return;
         try {
@@ -92,11 +93,12 @@ export default function MySpace({
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((currentUser) => {
             setUser(currentUser);
+            setLoadingAuth(false);
         });
 
         // Cleanup subscription on unmount
         return () => unsubscribe();
-    }, []);
+    }, [setUser]);
 
     useEffect(() => {
         if (!user?.uid) return; // wait for auth to be ready

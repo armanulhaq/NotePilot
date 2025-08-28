@@ -3,7 +3,7 @@ export default function EmptyNoteState() {
         <div className="flex flex-col items-center justify-center h-full text-center px-6">
             <div className="mb-4">
                 <img
-                    src="/write.svg"
+                    src="/empty.svg"
                     alt="Empty state illustration"
                     className="w-100 h-100 mx-auto"
                 />
