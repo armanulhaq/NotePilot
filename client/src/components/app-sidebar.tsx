@@ -24,6 +24,7 @@ export function AppSidebar({ notes = [], ...props }: AppSidebarProps) {
     };
 
     const [selectedNote, setSelectedNote] = useState<string | null>(null);
+
     const findNote = (id: string) => {
         const note = notes.find((note) => note.id === id);
         if (note) {
@@ -31,6 +32,7 @@ export function AppSidebar({ notes = [], ...props }: AppSidebarProps) {
         }
         navigate(`/my-space/${id}`);
     };
+
     return (
         <Sidebar {...props}>
             <SidebarHeader
@@ -56,32 +58,21 @@ export function AppSidebar({ notes = [], ...props }: AppSidebarProps) {
                     Create a new note
                 </Button>
             </div>
-            {notes.length === 0 ? (
-                <div className="flex flex-1 flex-col gap-4 p-4">
-                    <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                        <div className="bg-muted/50 aspect-video rounded-xl" />
-                        <div className="bg-muted/50 aspect-video rounded-xl" />
-                        <div className="bg-muted/50 aspect-video rounded-xl" />
+            {notes.map((item) => (
+                <div
+                    className={`${
+                        selectedNote === item.id || params.id === item.id
+                            ? "bg-sidebar-border"
+                            : ""
+                    } py-2 mx-2 rounded cursor-pointer px-4 hover:bg-muted flex justify-between items-center`}
+                    key={item.id}
+                    onClick={() => findNote(item.id)}
+                >
+                    <div className="text-sm text-muted-foreground max-w-2/3 truncate">
+                        {item.title}
                     </div>
-                    <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
                 </div>
-            ) : (
-                notes.map((item) => (
-                    <div
-                        className={`${
-                            selectedNote === item.id || params.id === item.id
-                                ? "bg-muted"
-                                : ""
-                        } py-2 mx-2 rounded cursor-pointer px-4 hover:bg-muted flex justify-between items-center`}
-                        key={item.id}
-                        onClick={() => findNote(item.id)}
-                    >
-                        <div className="text-sm text-muted-foreground max-w-2/3 truncate">
-                            {item.title}
-                        </div>
-                    </div>
-                ))
-            )}
+            ))}
             <SidebarRail />
         </Sidebar>
     );

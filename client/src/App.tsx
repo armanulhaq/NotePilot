@@ -16,6 +16,9 @@ function App() {
         });
         return () => unsubscribe();
     }, []);
+    //This listener runs whenever the authentication state changes (user logs in, logs out).
+    //It updates the local React state user using setUser(currentUser).
+    //When the component unmounts, it cleans up by unsubscribing from the listener to avoid memory leaks.
     return (
         <ThemeProvider>
             <Routes>

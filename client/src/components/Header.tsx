@@ -6,6 +6,7 @@ import type { User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { auth } from "../firebase";
 import { LogOut } from "lucide-react";
+import { toast } from "sonner";
 
 export default function Header() {
     const navigate = useNavigate();
@@ -72,7 +73,7 @@ export default function Header() {
                             <img
                                 className="w-8 h-8 rounded-full"
                                 src={user?.photoURL || ""}
-                                alt=""
+                                alt="User Image"
                             />
                             <p className="text-muted-foreground text-sm">
                                 Hi, {user?.displayName?.split(" ")[0]}
@@ -85,7 +86,7 @@ export default function Header() {
                                         navigate("/"); // redirect after logout
                                     } catch (err) {
                                         console.error(err);
-                                        alert("Logout failed!");
+                                        toast("Logout failed!");
                                     }
                                 }}
                             >
@@ -101,7 +102,7 @@ export default function Header() {
                                     navigate("/my-space"); // redirect after login
                                 } catch (err) {
                                     console.error(err);
-                                    alert("Login failed!");
+                                    toast("Login failed!");
                                 }
                             }}
                         >

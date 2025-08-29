@@ -56,11 +56,13 @@ export default function MySpace({
     const handleCloseDialog = () => {
         navigate("/my-space");
     };
+
     useEffect(() => {
         if (!loadingAuth && !user) {
             navigate("/");
         }
     }, [loadingAuth, user, navigate]);
+
     const handleConfirm = async () => {
         if (!user?.uid) return;
         try {
@@ -76,7 +78,7 @@ export default function MySpace({
             if (!note.ok) {
                 throw new Error("Failed to create note");
             }
-            navigate("/my-space");
+            navigate(`/my-space/${slug}`);
         } catch (error) {
             console.error("Error creating note:", error);
         } finally {
@@ -84,7 +86,7 @@ export default function MySpace({
             toast("Note created successfully");
             setTimeout(() => {
                 window.location.reload();
-            }, 1500); // 1.5 seconds delay
+            }, 1000); //wanted to create an effect of refresh but after 1 sec to see toast
         }
     };
 
@@ -95,12 +97,12 @@ export default function MySpace({
             setLoadingAuth(false);
         });
 
-        // Cleanup subscription on unmount
         return () => unsubscribe();
     }, [setUser]);
 
     useEffect(() => {
         if (!user?.uid) return; // wait for auth to be ready
+
         const fetchNotes = async () => {
             try {
                 const response = await fetch(

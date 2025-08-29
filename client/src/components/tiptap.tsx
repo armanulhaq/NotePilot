@@ -1,23 +1,12 @@
 import "prosemirror-view/style/prosemirror.css";
 import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import TextAlign from "@tiptap/extension-text-align";
-import Highlight from "@tiptap/extension-highlight";
-import Image from "@tiptap/extension-image";
-import Placeholder from "@tiptap/extension-placeholder";
-import TaskList from "@tiptap/extension-task-list";
-import TaskItem from "@tiptap/extension-task-item";
-import Subscript from "@tiptap/extension-subscript";
-import Superscript from "@tiptap/extension-superscript";
-import Underline from "@tiptap/extension-underline";
-import Link from "@tiptap/extension-link";
-import {
-    Table,
-    TableRow,
-    TableCell,
-    TableHeader,
-} from "@tiptap/extension-table";
-import { auth } from "../firebase";
+import StarterKit from "@tiptap/starter-kit"; //Includes basic nodes (paragraph, headings, lists, code, etc.).
+import TextAlign from "@tiptap/extension-text-align"; //Align text (left, center, right).
+import Highlight from "@tiptap/extension-highlight"; //Highlight text.
+import Image from "@tiptap/extension-image"; //Insert images.
+import Underline from "@tiptap/extension-underline"; //Underline text.
+import Link from "@tiptap/extension-link"; //Insert links.
+import { auth } from "../firebase"; //Firebase authentication.
 
 import {
     Bold,
@@ -61,30 +50,21 @@ export default function FullTiptapEditor() {
             StarterKit.configure({
                 // Disable the default heading extension from StarterKit
                 heading: {
-                    levels: [1, 2, 3, 4, 5, 6],
+                    levels: [1, 2, 3], //h1, h2, h3
                 },
             }),
-            TextAlign.configure({ types: ["heading", "paragraph"] }),
-            Highlight,
+            TextAlign.configure({ types: ["heading", "paragraph"] }), //Adds text alignment (left, center, right) for headings and paragraphs.
+            Highlight, //Adds highlight functionality.
             Image.configure({
                 HTMLAttributes: {
-                    class: "max-w-xs max-h-64 object-contain rounded border",
+                    class: "max-w-sm max-h-64 object-contain rounded border",
                 },
-            }),
-            Placeholder.configure({ placeholder: "Start typing..." }),
-            Table.configure({ resizable: true }),
-            TableRow,
-            TableHeader,
-            TableCell,
-            TaskList,
-            TaskItem,
-            Subscript,
-            Superscript,
+            }), //Adds image functionality.
             Underline,
             Link.configure({
                 openOnClick: false,
                 HTMLAttributes: {
-                    class: "text-blue-600 underline cursor-pointer",
+                    class: "text-blue-500 underline cursor-pointer",
                 },
             }),
         ],
@@ -194,20 +174,19 @@ export default function FullTiptapEditor() {
 
     const addLink = () => {
         const previousUrl = editor.getAttributes("link").href;
-        const url = window.prompt("URL", previousUrl);
+        let url = window.prompt("URL", previousUrl);
 
-        // cancelled
-        if (url === null) {
-            return;
-        }
+        if (url === null) return;
 
-        // empty
         if (url === "") {
             editor.chain().focus().extendMarkRange("link").unsetLink().run();
             return;
         }
 
-        // update link
+        if (!/^https?:\/\//i.test(url)) {
+            url = `https://${url}`;
+        }
+
         editor
             .chain()
             .focus()
@@ -215,12 +194,6 @@ export default function FullTiptapEditor() {
             .setLink({ href: url })
             .run();
     };
-
-    // Improved button class function that properly handles active states
-    const buttonClass = (active: boolean) =>
-        `p-2 rounded hover:bg-gray-200 transition-colors ${
-            active ? "bg-blue-100 border-blue-300" : "bg-white border-gray-300"
-        } border`;
 
     return (
         <>
@@ -382,7 +355,6 @@ export default function FullTiptapEditor() {
                                 editor.chain().focus().toggleBold().run()
                             }
                             variant="outline"
-                            className={buttonClass(editor.isActive("bold"))}
                         >
                             <Bold className="w-4 h-4" />
                         </Button>
@@ -391,7 +363,6 @@ export default function FullTiptapEditor() {
                                 editor.chain().focus().toggleItalic().run()
                             }
                             variant="outline"
-                            className={buttonClass(editor.isActive("italic"))}
                         >
                             <Italic className="w-4 h-4" />
                         </Button>
@@ -400,9 +371,6 @@ export default function FullTiptapEditor() {
                                 editor.chain().focus().toggleUnderline().run()
                             }
                             variant="outline"
-                            className={buttonClass(
-                                editor.isActive("underline")
-                            )}
                         >
                             <UnderlineIcon className="w-4 h-4" />
                         </Button>
@@ -411,7 +379,6 @@ export default function FullTiptapEditor() {
                                 editor.chain().focus().toggleStrike().run()
                             }
                             variant="outline"
-                            className={buttonClass(editor.isActive("strike"))}
                         >
                             <Strikethrough className="w-4 h-4" />
                         </Button>
@@ -420,9 +387,6 @@ export default function FullTiptapEditor() {
                                 editor.chain().focus().toggleHighlight().run()
                             }
                             variant="outline"
-                            className={buttonClass(
-                                editor.isActive("highlight")
-                            )}
                         >
                             <Highlighter className="w-4 h-4" />
                         </Button>
@@ -444,9 +408,6 @@ export default function FullTiptapEditor() {
                                     .run()
                             }
                             variant="outline"
-                            className={buttonClass(
-                                editor.isActive("heading", { level: 1 })
-                            )}
                         >
                             H1
                         </Button>
@@ -459,9 +420,6 @@ export default function FullTiptapEditor() {
                                     .run()
                             }
                             variant="outline"
-                            className={buttonClass(
-                                editor.isActive("heading", { level: 2 })
-                            )}
                         >
                             H2
                         </Button>
@@ -474,9 +432,6 @@ export default function FullTiptapEditor() {
                                     .run()
                             }
                             variant="outline"
-                            className={buttonClass(
-                                editor.isActive("heading", { level: 3 })
-                            )}
                         >
                             H3
                         </Button>
@@ -485,9 +440,6 @@ export default function FullTiptapEditor() {
                                 editor.chain().focus().toggleBulletList().run()
                             }
                             variant="outline"
-                            className={buttonClass(
-                                editor.isActive("bulletList")
-                            )}
                         >
                             <List className="w-4 h-4" />
                         </Button>
@@ -496,9 +448,6 @@ export default function FullTiptapEditor() {
                                 editor.chain().focus().toggleOrderedList().run()
                             }
                             variant="outline"
-                            className={buttonClass(
-                                editor.isActive("orderedList")
-                            )}
                         >
                             <ListOrdered className="w-4 h-4" />
                         </Button>
@@ -508,7 +457,6 @@ export default function FullTiptapEditor() {
                                 editor.chain().focus().toggleCode().run()
                             }
                             variant="outline"
-                            className={buttonClass(editor.isActive("code"))}
                         >
                             <CodeIcon className="w-4 h-4" />
                         </Button>
@@ -517,9 +465,6 @@ export default function FullTiptapEditor() {
                                 editor.chain().focus().toggleCodeBlock().run()
                             }
                             variant="outline"
-                            className={buttonClass(
-                                editor.isActive("codeBlock")
-                            )}
                         >
                             <SquareChevronRight className="w-4 h-4" />
                         </Button>
@@ -529,25 +474,14 @@ export default function FullTiptapEditor() {
                                 editor.chain().focus().toggleBlockquote().run()
                             }
                             variant="outline"
-                            className={buttonClass(
-                                editor.isActive("blockquote")
-                            )}
                         >
                             <Quote />
                         </Button>
 
-                        <Button
-                            onClick={addLink}
-                            variant="outline"
-                            className={buttonClass(editor.isActive("link"))}
-                        >
+                        <Button onClick={addLink} variant="outline">
                             <Link2 className="w-4 h-4" />
                         </Button>
-                        <Button
-                            onClick={insertImage}
-                            variant="outline"
-                            className={buttonClass(false)}
-                        >
+                        <Button onClick={insertImage} variant="outline">
                             <ImageIcon />
                         </Button>
 
@@ -556,7 +490,6 @@ export default function FullTiptapEditor() {
                                 editor.chain().focus().setHorizontalRule().run()
                             }
                             variant="outline"
-                            className={buttonClass(false)}
                         >
                             <Minus className="w-4 h-4" />
                         </Button>
@@ -569,9 +502,6 @@ export default function FullTiptapEditor() {
                                     .run()
                             }
                             variant="outline"
-                            className={buttonClass(
-                                editor.isActive({ textAlign: "left" })
-                            )}
                         >
                             <AlignLeft className="w-4 h-4" />
                         </Button>
@@ -584,9 +514,6 @@ export default function FullTiptapEditor() {
                                     .run()
                             }
                             variant="outline"
-                            className={buttonClass(
-                                editor.isActive({ textAlign: "center" })
-                            )}
                         >
                             <AlignCenter className="w-4 h-4" />
                         </Button>
@@ -599,9 +526,6 @@ export default function FullTiptapEditor() {
                                     .run()
                             }
                             variant="outline"
-                            className={buttonClass(
-                                editor.isActive({ textAlign: "right" })
-                            )}
                         >
                             <AlignRight className="w-4 h-4" />
                         </Button>
