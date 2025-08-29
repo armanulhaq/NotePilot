@@ -98,7 +98,8 @@ export default function FullTiptapEditor() {
 
     const user = auth.currentUser;
     const [allNotes, setAllNotes] = useState<Note[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [saveLoading, setSaveLoading] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     useEffect(() => {
         if (!user?.uid) return; // wait for auth to be ready
@@ -138,34 +139,31 @@ export default function FullTiptapEditor() {
 
     const saveNote = async () => {
         try {
-            setLoading(true);
-            const response = await fetch(
-                `${API_BASE}/api/notes/update-note`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${user?.uid}`,
-                    },
-                    body: JSON.stringify({
-                        id: noteId,
-                        content: editor.getHTML(),
-                    }),
-                }
-            );
+            setSaveLoading(true);
+            const response = await fetch(`${API_BASE}/api/notes/update-note`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${user?.uid}`,
+                },
+                body: JSON.stringify({
+                    id: noteId,
+                    content: editor.getHTML(),
+                }),
+            });
             const data = await response.json();
             console.log(data);
             toast("Note saved successfully");
         } catch (error) {
             console.error("Error saving note:", error);
         } finally {
-            setLoading(false);
+            setSaveLoading(false);
         }
     };
 
     const deleteNote = async () => {
         try {
-            setLoading(true);
+            setDeleteLoading(true);
             await fetch(`${API_BASE}/api/notes/delete-note`, {
                 method: "DELETE",
                 headers: {
@@ -179,7 +177,7 @@ export default function FullTiptapEditor() {
         } catch (error) {
             console.log("Error deleting the note", error);
         } finally {
-            setLoading(false);
+            setDeleteLoading(false);
             toast("Note deleted successfully");
             setTimeout(() => {
                 window.location.href = "/my-space";
@@ -615,7 +613,7 @@ export default function FullTiptapEditor() {
                             variant="outline"
                             className="cursor-pointer"
                         >
-                            {loading ? (
+                            {saveLoading ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
                                 <Save className="w-4 h-4" />
@@ -626,7 +624,7 @@ export default function FullTiptapEditor() {
                             variant="outline"
                             className="cursor-pointer hover:bg-red-100"
                         >
-                            {loading ? (
+                            {deleteLoading ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
                                 <Trash className="w-4 h-4" />

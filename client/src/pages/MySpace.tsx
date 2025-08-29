@@ -146,8 +146,8 @@ export default function MySpace({
                                 <BreadcrumbPage>My Space</BreadcrumbPage>
                             </BreadcrumbItem>
                         </BreadcrumbList>
-                        <BreadcrumbList className="flex items-center space-x-5">
-                            <BreadcrumbItem className="hidden md:block">
+                        <BreadcrumbList className="flex items-center space-x-2 lg:space-x-5">
+                            <BreadcrumbItem className="">
                                 <ModeToggle />
                             </BreadcrumbItem>
 

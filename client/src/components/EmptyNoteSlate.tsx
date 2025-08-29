@@ -5,11 +5,11 @@ export default function EmptyNoteState() {
                 <img
                     src="/empty.svg"
                     alt="Empty state illustration"
-                    className="w-100 h-100 mx-auto"
+                    className="w-64 h-64 md:w-100 md:h-100 lg:w-100 lg:h-100 mx-auto"
                 />
             </div>
-            <h2 className="text-2xl font-semibold">No note selected</h2>
-            <p className="text-muted-foreground mb-4">
+            <h2 className="text-2xl font-semibold mb-2">No note selected</h2>
+            <p className="text-sm lg:text-lg text-muted-foreground mb-4">
                 Select a note from the sidebar or create a new one to get
                 started.
             </p>
